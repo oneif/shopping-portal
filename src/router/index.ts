@@ -1,18 +1,16 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
+import { constantRoutes } from './routers'
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: [
-    {
-      path: '/',
-      redirect: '/home'
-    },
-    {
-      path: '/home',
-      name: 'home',
-      component: () => import('../views/Home.vue')
+  routes: constantRoutes,
+  //滚动行为
+  scrollBehavior() {
+    return {
+      left: 0,
+      top: 0
     }
-  ]
+  }
 })
 
 export default router
