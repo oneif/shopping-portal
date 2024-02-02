@@ -19,6 +19,7 @@
       </el-input>
     </el-form-item>
   </el-form>
+
   <div class="login-btn">
     <el-button round size="large" @click="reset"> 重置 </el-button>
     <el-button round size="large" type="primary" :loading="loading" @click="login">
@@ -32,14 +33,15 @@ import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { User, Lock } from '@element-plus/icons-vue'
 import useUserStore from '@/stores/user'
+import md5 from 'md5'
 import type { ElForm } from 'element-plus'
 import type { LoginForm } from '@/api/users/type'
 type FormInstance = InstanceType<typeof ElForm>
 
 const loginFormRef = ref<FormInstance>()
 const loginRules = reactive({
-  username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
-  password: [{ required: true, message: '请输入密码', trigger: 'blur' }]
+  username: [{ required: true, message: '请输入用户名', trigger: ['blur', 'change'] }],
+  password: [{ required: true, message: '请输入密码', trigger: ['blur', 'change'] }]
 })
 
 const loading = ref(false)
@@ -50,6 +52,13 @@ const loginForm = reactive<LoginForm>({
 
 const reset = () => {
   loginFormRef.value?.resetFields()
+  loginForm.username = ''
+  loginForm.password = ''
+}
+
+// 加密
+const encryption = (oldStr: string, index: number, newStr: string) => {
+  return md5(oldStr.slice(0, index) + newStr + oldStr.slice(index))
 }
 
 const userStore = useUserStore()
@@ -58,8 +67,11 @@ const login = () => {
   loginFormRef.value?.validate((valid) => {
     if (valid) {
       loading.value = true
-      userStore.userLogin(loginForm).then(() => {
-        // router.push('/')
+      let md5pwd = md5(
+        encryption(encryption(encryption(md5(loginForm.password), 2, 'o'), 7, 'n'), 12, 'e')
+      )
+      userStore.userLogin({ ...loginForm, password: md5pwd }).then(() => {
+        router.push('/')
         ElMessage({
           type: 'success',
           message: '登录成功'
