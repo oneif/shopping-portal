@@ -18,8 +18,34 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
   (res) => {
     const code: number = res.data.code
+    let msg: string
     if (code === 200) {
       return res.data
+    } else {
+      switch (code) {
+        case 401:
+          msg = 'token过期'
+          break
+        case 403:
+          msg = '无权访问'
+          break
+        case 404:
+          msg = '请求地址错误'
+          break
+        case 500:
+          msg = '服务器出现问题'
+          break
+        case -1:
+          msg = res.data?.message || 'error'
+          break
+        default:
+          msg = '出错了，请稍后重试'
+      }
+      ElMessage({
+        type: 'error',
+        message: msg
+      })
+      return Promise.reject(res.data)
     }
   },
   (err) => {
@@ -37,6 +63,9 @@ request.interceptors.response.use(
         break
       case 500:
         msg = err.response?.data?.message || '服务器出现问题'
+        break
+      case -1:
+        msg = 'error'
         break
       default:
         msg = '出错了，请稍后重试'
