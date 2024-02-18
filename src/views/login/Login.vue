@@ -152,6 +152,7 @@ const changeStatus = (value: string) => {
   background-size: cover;
   background-position: 50%;
   .login-box {
+    height: 600px;
     .login-form {
       position: absolute;
       top: 120px;
