@@ -7,22 +7,15 @@ export interface LoginForm {
 export interface ResponseData {
   code: number
   message: string
-  ok: boolean
 }
 
 // 登录接口返回的数据类型
 export interface LoginResponseData extends ResponseData {
   data: string
 }
-// 获取用户信息返回的数据类型
-export interface UserInfoResponseData extends ResponseData {
-  data: {
-    routes: string[]
-    buttons: string[]
-    roles: string[]
-    name: string
-    avatar: string
-  }
+// 注册接口返回的数据类型
+export interface RegisterResponseData extends ResponseData {
+  data: string
 }
 // 退出登录接口返回的数据类型
 export interface LogoutResponseData extends ResponseData {
