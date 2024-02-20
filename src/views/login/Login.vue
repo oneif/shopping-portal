@@ -56,8 +56,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, reactive, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import useUserStore from '@/stores/user'
@@ -140,6 +140,10 @@ const changeStatus = (value: string) => {
   reset()
   status.value = value
 }
+onMounted(() => {
+  const route = useRoute()
+  status.value = route.query?.status as string
+})
 </script>
 
 <style lang="scss" scoped>
