@@ -1,4 +1,10 @@
 <template>
+  <nav class="header">
+    <div class="content-layout">
+      <span class="nav-l"><a href=""></a></span>
+      <span class="nav-r"><a href="javascript:void(0);">"登录页面"改进建议</a></span>
+    </div>
+  </nav>
   <div class="login-container flx-center">
     <div class="login-box content-layout">
       <div class="login-form">
@@ -38,6 +44,7 @@
             v-throttle
             size="large"
             type="primary"
+            color="#ff4400"
             :loading="loading"
             @click="onSave"
           >
@@ -147,6 +154,23 @@ onMounted(() => {
 </script>
 
 <style lang="scss" scoped>
+.header {
+  height: 88px;
+  padding: 22px 0;
+  .nav-l {
+    float: left;
+    a {
+      display: inline-block;
+      width: 72px;
+      height: 42px;
+      background: url('@/assets/images/logo_small.png') no-repeat 0 0/100% 100%;
+    }
+  }
+  .nav-r {
+    float: right;
+    margin-top: 14px;
+  }
+}
 .login-container {
   height: 600px;
   min-height: 600px;
