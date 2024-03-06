@@ -108,11 +108,11 @@ const login = () => {
   userStore
     .userLogin(params)
     .then(() => {
-      router.push('/')
       ElMessage({
         type: 'success',
         message: '登录成功'
       })
+      router.push('/')
       loading.value = false
     })
     .catch(() => {
