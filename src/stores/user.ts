@@ -1,21 +1,20 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
-import { GET_TOKEN, SET_TOKEN } from '@/utils/token'
+import { GET, SET } from '@/utils/localStorage'
 import { login, register } from '@/api/users/index'
 import type { LoginForm } from '@/api/users/type'
 import md5 from 'md5'
 
 const useUserStore = defineStore('User', () => {
   const token = ref<string | null>('')
-  token.value = GET_TOKEN()
-  const username = ref<string | null>('')
+  token.value = GET('TOKEN')
 
   const userLogin = async (data: LoginForm) => {
-    username.value = data.username
     await login(data).then((res) => {
       if (res.code == 200) {
         token.value = res.data
-        SET_TOKEN(res.data)
+        SET('TOKEN', res.data)
+        SET('username', data.username)
         return Promise.resolve(res)
       } else return Promise.reject(res)
     })
@@ -43,7 +42,6 @@ const useUserStore = defineStore('User', () => {
 
   return {
     token,
-    username,
     userLogin,
     userRegister,
     passwordEncrypt

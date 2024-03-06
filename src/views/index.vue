@@ -115,7 +115,7 @@
             <div class="user-bd">
               <div class="avatar"><img :src="avatarURL!" /></div>
               <div class="nick-name">
-                Hi! <strong>{{ userStore.username ? userStore.username : '你好' }}</strong>
+                Hi! <strong>{{ username ? username : '你好' }}</strong>
               </div>
             </div>
             <div class="user-ft">
@@ -191,6 +191,7 @@ import { productList } from '@/api/products/index'
 import { getUserDetail } from '@/api/users/index'
 import type { Products } from '@/api/products/type'
 import { ElMessage } from 'element-plus'
+import { GET } from '@/utils/localStorage'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 import useUserStore from '@/stores/user'
@@ -252,12 +253,13 @@ const fetchProductList = (page: string) => {
 
 const avatarURL = ref<string | null>('src/assets/images/defaultAvatar.jpg')
 const fetchUserInfo = () => {
-  getUserDetail(userStore.username!).then((res) => (avatarURL.value = res.data.userPic))
+  getUserDetail(username!).then((res) => (avatarURL.value = res.data.userPic))
 }
 
+const username = GET('username')
 onMounted(() => {
   fetchProductList(page.toString())
-  if (userStore.token) {
+  if (userStore.token && username) {
     fetchUserInfo()
   }
 })
