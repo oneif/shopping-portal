@@ -8,8 +8,10 @@ import md5 from 'md5'
 const useUserStore = defineStore('User', () => {
   const token = ref<string | null>('')
   token.value = GET_TOKEN()
+  const username = ref<string | null>('')
 
   const userLogin = async (data: LoginForm) => {
+    username.value = data.username
     await login(data).then((res) => {
       if (res.code == 200) {
         token.value = res.data
@@ -41,6 +43,7 @@ const useUserStore = defineStore('User', () => {
 
   return {
     token,
+    username,
     userLogin,
     userRegister,
     passwordEncrypt

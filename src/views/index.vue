@@ -113,8 +113,10 @@
           </div>
           <div class="right-inner-right">
             <div class="user-bd">
-              <div class="avatar"><img src="@/assets/images/qr.png" /></div>
-              <div class="nick-name">Hi! <strong>你好</strong></div>
+              <div class="avatar"><img :src="avatarURL!" /></div>
+              <div class="nick-name">
+                Hi! <strong>{{ userStore.username ? userStore.username : '你好' }}</strong>
+              </div>
             </div>
             <div class="user-ft">
               <el-button class="login" color="#ff5800" @click="loginAndRegister('login')" round
@@ -168,32 +170,31 @@
       </div>
       <div class="goods content-layout">
         <h3 class="goods-header">猜你喜欢</h3>
-        <div class="goods-content">
-          <div class="goods-content-item">
-            <div class="img"><img src="@/assets/images/qr.png" /></div>
-            <div class="info">香港甜心屋润喉佛手干228gX2瓶零食老香黄香橼金佛手瓜柑零食薄荷</div>
+        <div class="goods-content" v-infinite-scroll="() => fetchProductList((page++).toString())">
+          <div class="goods-content-item" v-for="item in productsList" :key="item.id">
+            <div class="img"><img :src="item.img" /></div>
+            <div class="info">{{ item.name }}</div>
             <div class="price">
-              <span class="price-value"><em>￥</em>22.23</span>
+              <span class="price-value"><em>￥</em>{{ item.price }}</span>
             </div>
           </div>
-          <div class="goods-content-item">123123</div>
-          <div class="goods-content-item">123123</div>
         </div>
+        <div class="split content-layout">----我也是有底线的----</div>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
+import { productList } from '@/api/products/index'
+import { getUserDetail } from '@/api/users/index'
+import type { Products } from '@/api/products/type'
+import { ElMessage } from 'element-plus'
 import { useRouter } from 'vue-router'
 const router = useRouter()
-const loginAndRegister = (status: string) => {
-  const href = router.resolve({
-    path: `/login`,
-    query: { status: status }
-  }).href
-  window.open(href, '_blank')
-}
+import useUserStore from '@/stores/user'
+const userStore = useUserStore()
 
 const serviceOptions = [
   { icon: 'dress', a1: '女装', a2: '内衣', a3: '奢品' },
@@ -228,9 +229,38 @@ const carouselOptions = [
   }
 ]
 
+const loginAndRegister = (status: string) => {
+  const href = router.resolve({
+    path: `/login`,
+    query: { status: status }
+  }).href
+  window.open(href, '_blank')
+}
+
 const serviceClick = (classify: string) => {
   console.log(classify)
 }
+
+let productsList = ref<Products[]>([])
+let page = Math.ceil(Math.random() * 37 + 1)
+const fetchProductList = (page: string) => {
+  productList({ page, size: '24' }).then((res) => {
+    if (res.code == 200) productsList.value.push(...res.data)
+    else ElMessage.error(res.message)
+  })
+}
+
+const avatarURL = ref<string | null>('src/assets/images/defaultAvatar.jpg')
+const fetchUserInfo = () => {
+  getUserDetail(userStore.username!).then((res) => (avatarURL.value = res.data.userPic))
+}
+
+onMounted(() => {
+  fetchProductList(page.toString())
+  if (userStore.token) {
+    fetchUserInfo()
+  }
+})
 </script>
 
 <style lang="scss" scoped>
@@ -436,7 +466,6 @@ const serviceClick = (classify: string) => {
         border-radius: 12px;
         margin-top: 10px;
         float: left;
-        background-color: red;
         overflow: hidden;
       }
       &-inner-right {
@@ -453,7 +482,6 @@ const serviceClick = (classify: string) => {
               width: 60px;
               height: 60px;
               border-radius: 50%;
-              background-color: red;
               overflow: hidden;
               img {
                 width: 100%;
@@ -567,7 +595,6 @@ const serviceClick = (classify: string) => {
       &-content {
         width: 100%;
         height: auto;
-        background-color: pink;
         &-item {
           position: relative;
           float: left;
@@ -621,6 +648,12 @@ const serviceClick = (classify: string) => {
             }
           }
         }
+      }
+      .split {
+        text-align: center;
+        padding-bottom: 6px;
+        color: #999;
+        font-size: 12px;
       }
     }
   }
