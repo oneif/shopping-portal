@@ -2,7 +2,7 @@ export const constantRoutes = [
   {
     // 首页
     path: '/',
-    component: () => import('@/views/Home.vue'),
+    component: () => import('@/views/index.vue'),
     name: 'index', // 命名路由
     meta: {
       title: '首页',
