@@ -5,13 +5,18 @@ export interface LoginForm {
   password: string
 }
 export interface User {
-  id: string
+  id: number
   username: string
   nickname: string
   email: string
   userPic: string
   createTime: string
   updateTime: string
+  shopCarProductCount: number
+  waitConfirmCount: number
+  waitSendCount: number
+  waitPayCount: number
+  waitRateCount: number
 }
 
 export interface LoginResponseData extends ResponseData {

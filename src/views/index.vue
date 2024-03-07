@@ -113,12 +113,12 @@
           </div>
           <div class="right-inner-right">
             <div class="user-bd">
-              <div class="avatar"><img :src="avatarURL!" /></div>
+              <div class="avatar"><img :src="userInfo.userPic" /></div>
               <div class="nick-name">
                 Hi! <strong>{{ username ? username : '你好' }}</strong>
               </div>
             </div>
-            <div class="user-ft">
+            <div class="user-ft" v-if="!username">
               <el-button class="login" color="#ff5800" @click="loginAndRegister('login')" round
                 >登 录</el-button
               >
@@ -128,6 +128,28 @@
                 @click="loginAndRegister('register')"
                 round
                 >注 册</el-button
+              >
+            </div>
+            <div class="user-column" v-else>
+              <a href="javascript:void(0);"
+                ><strong>{{ userInfo.shopCarProductCount }}</strong
+                >购物车</a
+              >
+              <a href="javascript:void(0);"
+                ><strong>{{ userInfo.waitSendCount }}</strong
+                >待发货</a
+              >
+              <a href="javascript:void(0);"
+                ><strong>{{ userInfo.waitConfirmCount }}</strong
+                >待收货</a
+              >
+              <a href="javascript:void(0);"
+                ><strong>{{ userInfo.waitPayCount }}</strong
+                >待付款</a
+              >
+              <a href="javascript:void(0);"
+                ><strong>{{ userInfo.waitRateCount }}</strong
+                >待评价</a
               >
             </div>
             <div class="user-my">
@@ -186,10 +208,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { productList } from '@/api/products/index'
 import { getUserDetail } from '@/api/users/index'
 import type { Products } from '@/api/products/type'
+import type { User } from '@/api/users/type'
 import { ElMessage } from 'element-plus'
 import { GET } from '@/utils/localStorage'
 import { useRouter } from 'vue-router'
@@ -251,9 +274,22 @@ const fetchProductList = (page: string) => {
   })
 }
 
-const avatarURL = ref<string | null>('src/assets/images/defaultAvatar.jpg')
+let userInfo = reactive<User>({
+  id: 0,
+  username: '',
+  nickname: '',
+  email: '',
+  userPic: '',
+  createTime: '',
+  updateTime: '',
+  shopCarProductCount: 0,
+  waitConfirmCount: 0,
+  waitSendCount: 0,
+  waitPayCount: 0,
+  waitRateCount: 0
+})
 const fetchUserInfo = () => {
-  getUserDetail(username!).then((res) => (avatarURL.value = res.data.userPic))
+  getUserDetail(username!).then((res) => (userInfo = res.data))
 }
 
 const username = GET('username')
@@ -519,6 +555,22 @@ onMounted(() => {
             }
             .register {
               margin-right: 60px;
+            }
+          }
+          &-column {
+            margin: 20px 0;
+            padding-left: 26px;
+            a {
+              display: inline-block;
+              width: 55px;
+              height: 36px;
+              text-align: center;
+              strong {
+                height: 18px;
+                display: block;
+                font-size: 14px;
+                color: #f40;
+              }
             }
           }
           &-my {
